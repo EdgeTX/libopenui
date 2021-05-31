@@ -351,7 +351,7 @@ static float lb_min(float arr[], int n)
   return m;
 }
 
-bool BitmapBuffer::liangBarskyClipper(coord_t& x1, coord_t& y1, coord_t& x2, coord_t& y2)
+bool BitmapBuffer::liangBarskyClipper(coord_t & x1, coord_t & y1, coord_t & x2, coord_t & y2, coord_t xmin, coord_t xmax, coord_t ymin, coord_t ymax)
 {
   // defining variables
   float p1 = -(x2 - x1);
@@ -359,10 +359,10 @@ bool BitmapBuffer::liangBarskyClipper(coord_t& x1, coord_t& y1, coord_t& x2, coo
   float p3 = -(y2 - y1);
   float p4 = -p3;
 
-  float q1 = x1 - xmin;
-  float q2 = xmax - x1;
-  float q3 = y1 - ymin;
-  float q4 = ymax - y1;
+  float q1 = (x1 - xmin);
+  float q2 = (xmax - x1);
+  float q3 = (y1 - ymin);
+  float q4 = (ymax - y1);
 
   float posarr[5], negarr[5];
   int posind = 1, negind = 1;
@@ -429,7 +429,7 @@ void BitmapBuffer::drawLine(coord_t x1, coord_t y1, coord_t x2, coord_t y2,
   x2 += offsetX;
   y2 += offsetY;
 
-  if (!liangBarskyClipper(x1, y1, x2, y2))
+  if (!liangBarskyClipper(x1, y1, x2, y2, xmin, xmax, ymin, ymax))
     return;
   
   // No 'opacity' here, only 'color'
@@ -548,6 +548,57 @@ void BitmapBuffer::invertRect(coord_t x, coord_t y, coord_t w, coord_t h, LcdFla
       drawPixel(p, RGB_JOIN(0x1F + red - bgRed, 0x3F + green - bgGreen, 0x1F + blue - bgBlue));
       MOVE_TO_NEXT_RIGHT_PIXEL(p);
     }
+  }
+}
+
+void BitmapBuffer::drawFilledTriangle(coord_t x0, coord_t y0, coord_t x1, coord_t y1, coord_t x2, coord_t y2, LcdFlags flags, uint8_t opacity)
+{
+  coord_t a, b;
+
+  #define SWAP(a, b) {coord_t tmp = b; b = a; a = tmp;}
+
+  if (y0 > y1) { SWAP(y0, y1); SWAP(x0, x1); }
+  if (y1 > y2) { SWAP(y2, y1); SWAP(x2, x1); }
+  if (y0 > y1) { SWAP(y0, y1); SWAP(x0, x1); }
+
+  if (y0 == y2) { // Handle awkward all-on-same-line case as its own thing
+    a = b = x0;
+    if (x1 < a)
+      a = x1;
+    else if (x1 > b)
+      b = x1;
+    if (x2 < a)
+      a = x2;
+    else if (x2 > b)
+      b = x2;
+    drawHorizontalLine(a, y0, b - a + 1, SOLID, flags, opacity);
+    return;
+  }
+
+  coord_t dx01 = x1 - x0, dy01 = y1 - y0, dx02 = x2 - x0, dy02 = y2 - y0, dx12 = x2 - x1, dy12 = y2 - y1;
+  coord_t sa = 0, sb = 0;
+  coord_t last = (y1 == y2) ? y1 : y1 - 1;
+  coord_t y;
+
+  for (y = y0; y <= last; y++) {
+    a = x0 + sa / dy01;
+    b = x0 + sb / dy02;
+    sa += dx01;
+    sb += dx02;
+    if (a > b) SWAP(a, b);
+    drawHorizontalLine(a, y, b - a + 1, SOLID, flags, opacity);
+  }
+
+  sa = dx12 * (y - y1);
+  sb = dx02 * (y - y0);
+
+  for (; y <= y2; y++) {
+    a = x1 + sa / dy12;
+    b = x0 + sb / dy02;
+    sa += dx12;
+    sb += dx02;
+    if (a > b) SWAP(a, b);
+    drawHorizontalLine(a, y, b - a + 1, SOLID, flags, opacity);
   }
 }
 

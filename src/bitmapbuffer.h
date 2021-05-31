@@ -280,6 +280,8 @@ class BitmapBuffer: public BitmapBufferBase<pixel_t>
 
     void invertRect(coord_t x, coord_t y, coord_t w, coord_t h, LcdFlags flags = 0);
 
+    void drawFilledTriangle(coord_t x1, coord_t y1, coord_t x2, coord_t y2, coord_t x3, coord_t y3, LcdFlags flags = 0, uint8_t opacity = 0);
+
     void drawCircle(coord_t x, coord_t y, coord_t radius, LcdFlags flags = 0);
 
     void drawFilledCircle(coord_t x, coord_t y, coord_t radius, LcdFlags flags = 0);
@@ -334,6 +336,8 @@ class BitmapBuffer: public BitmapBufferBase<pixel_t>
     BitmapBuffer * verticalFlip() const;
 
     BitmapBuffer * invertMask() const;
+
+    bool liangBarskyClipper(coord_t & x1, coord_t & y1, coord_t & x2, coord_t & y2, coord_t xmin, coord_t xmax, coord_t ymin, coord_t ymax);
 
   protected:
     static BitmapBuffer * load_bmp(const char * filename);
@@ -413,7 +417,6 @@ class BitmapBuffer: public BitmapBufferBase<pixel_t>
       return &data[y * _width + x];
     }
 
-
     inline void drawPixelAbs(coord_t x, coord_t y, pixel_t value)
     {
       pixel_t * p = getPixelPtrAbs(x, y);
@@ -427,8 +430,6 @@ class BitmapBuffer: public BitmapBufferBase<pixel_t>
     }
 
     void drawHorizontalLineAbs(coord_t x, coord_t y, coord_t w, uint8_t pat, LcdFlags flags, uint8_t opacity);
-
-    bool liangBarskyClipper(coord_t& x1, coord_t& y1, coord_t& x2, coord_t& y2);
 };
 
 // Back buffer to draw
