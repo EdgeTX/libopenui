@@ -28,6 +28,8 @@ MainWindow * MainWindow::_instance = nullptr;
 
 #if defined(HARDWARE_TOUCH)
 TouchState touchState;
+uint16_t touchGT911fwver = 0;
+uint16_t touchGT911hiccups = 0;
 Keyboard * Keyboard::activeKeyboard = nullptr;
 #endif
 
