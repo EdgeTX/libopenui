@@ -407,6 +407,10 @@ void Window::onEvent(event_t event)
 #if defined(HARDWARE_TOUCH)
 bool Window::onTouchStart(coord_t x, coord_t y)
 {
+  if(!duration10ms) {
+    duration10ms = get_tmr10ms();
+  }
+
   for (auto it = children.rbegin(); it != children.rend(); ++it) {
     auto child = *it;
     if (child->rect.contains(x, y)) {
@@ -435,6 +439,8 @@ bool Window::forwardTouchEnd(coord_t x, coord_t y)
 
 bool Window::onTouchEnd(coord_t x, coord_t y)
 {
+  touchDuration10ms = get_tmr10ms() - duration10ms;
+  duration10ms = 0;    
   return forwardTouchEnd(x, y) ? true : (windowFlags & OPAQUE);
 }
 

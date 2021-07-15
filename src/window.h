@@ -30,6 +30,7 @@
 #include "libopenui_defines.h"
 #include "libopenui_helpers.h"
 #include "libopenui_config.h"
+#include "timers.h"
 
 typedef uint32_t WindowFlags;
 
@@ -49,6 +50,8 @@ constexpr WindowFlags REFRESH_ALWAYS =        1u << 5u;
 constexpr WindowFlags PAINT_CHILDREN_FIRST =  1u << 6u;
 constexpr WindowFlags PUSH_FRONT =  1u << 7u;
 constexpr WindowFlags WINDOW_FLAGS_LAST =  PUSH_FRONT;
+
+constexpr int LONG_PRESS_10MS = 100;
 
 enum SetFocusFlag
 {
@@ -427,6 +430,14 @@ class Window
     }
 
 #if defined(HARDWARE_TOUCH)
+    tmr10ms_t duration10ms;
+    tmr10ms_t touchDuration10ms;
+    
+    bool isLongPress(tmr10ms_t longPressDuration = LONG_PRESS_10MS)
+    {
+      return (touchDuration10ms > longPressDuration) ? true : false;
+    }
+
     static coord_t getSnapStep(coord_t relativeScrollPosition, coord_t pageSize);
 
     virtual bool onTouchStart(coord_t x, coord_t y);

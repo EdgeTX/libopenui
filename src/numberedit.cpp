@@ -101,6 +101,13 @@ void NumberEdit::onEvent(event_t event)
         }
         return;
       }
+
+      case EVT_KEY_LONG(KEY_ENTER): {
+        int value = getValue();
+        if(-value < vmax && -value > vmin)
+          setValue(-value);
+        return;
+      } 
 #endif
 
       case EVT_KEY_FIRST(KEY_EXIT):
@@ -144,6 +151,14 @@ void NumberEdit::onEvent(event_t event)
 #if defined(HARDWARE_TOUCH)
 bool NumberEdit::onTouchEnd(coord_t, coord_t)
 {
+  Window::onTouchEnd(x, y);
+  if(isLongPress())
+  {
+    int value = getValue();
+    if(-value < vmax && -value > vmin)
+      setValue(-value);
+  }
+  
   if (!enabled) {
     return true;
   }
