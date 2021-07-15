@@ -38,6 +38,10 @@ Window::Window(Window * parent, const rect_t & rect, WindowFlags windowFlags, Lc
       invalidate();
     }
   }
+#if defined(HARDWARE_TOUCH)
+  duration10ms = 0;
+  touchDuration10ms = 0;
+#endif  
 }
 
 Window::~Window()
