@@ -122,7 +122,9 @@ bool MainWindow::refresh()
 
 void MainWindow::run(bool trash)
 {
+#if defined(DEBUG)
   auto start = ticksNow();
+#endif
 
   checkEvents();
 
@@ -134,8 +136,10 @@ void MainWindow::run(bool trash)
     lcdRefresh();
   }
 
+#if defined(DEBUG)
   auto delta = ticksNow() - start;
   if (delta > 10 * SYSTEM_TICKS_1MS) {
     TRACE_WINDOWS("MainWindow::run took %dms", (ticksNow() - start) / SYSTEM_TICKS_1MS);
   }
+#endif
 }
