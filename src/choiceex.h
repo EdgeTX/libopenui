@@ -26,8 +26,7 @@ class ChoiceEx : public Choice
 {
   public:
     ChoiceEx(FormGroup * parent, const rect_t &rect, int16_t vmin, int16_t vmax, std::function<int16_t()> getValue,
-             std::function<void(int16_t)> setValue = nullptr, std::function<uint32_t()> getTicks = nullptr, 
-             WindowFlags windowFlags = 0);
+             std::function<void(int16_t)> setValue = nullptr, WindowFlags windowFlags = 0);
     
     void setLongPressHandler(std::function<void(event_t)> handler);
 
@@ -51,7 +50,7 @@ class ChoiceEx : public Choice
 
 protected:
     std::function<void(event_t)> longPressHandler = nullptr;
-    std::function<uint32_t()> getTicks = nullptr;
+
 #if defined(HARDWARE_TOUCH)
     uint32_t duration10ms;
     bool longPressed = false;

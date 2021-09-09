@@ -22,18 +22,24 @@
 
 constexpr int LONG_PRESS_10MS = 40;
 
+extern inline tmr10ms_t getTicks()
+{
+  return g_tmr10ms;
+}
+
+
+
 void ChoiceEx::setLongPressHandler(std::function<void(event_t)> handler)
 {
   longPressHandler = handler;
 }
 
-ChoiceEx::ChoiceEx(FormGroup * parent, const rect_t & rect, int16_t vmin, int16_t vmax, std::function<int16_t()> getValue, std::function<void(int16_t)> setValue, std::function<uint32_t()> getTicks, WindowFlags windowFlags) :
+ChoiceEx::ChoiceEx(FormGroup * parent, const rect_t & rect, int16_t vmin, int16_t vmax, std::function<int16_t()> getValue, std::function<void(int16_t)> setValue, WindowFlags windowFlags) :
   Choice(parent, rect, vmin, vmax, getValue, setValue, windowFlags)
 {
 #if defined(HARDWARE_TOUCH)
   duration10ms = 0;
 #endif
-  this->getTicks = getTicks;
 }
 
 #if defined(HARDWARE_KEYS)
@@ -54,9 +60,6 @@ void ChoiceEx::onEvent(event_t event)
 #if defined(HARDWARE_TOUCH)
 bool ChoiceEx::isLongPress()
 {
-  if (!getTicks)
-    return false;
-
   unsigned int curTimer = getTicks();
   return (!longPressed && duration10ms != 0 && curTimer - duration10ms > LONG_PRESS_10MS);
 }
@@ -83,7 +86,7 @@ void ChoiceEx::checkEvents(void)
 
 bool ChoiceEx::onTouchStart(coord_t x, coord_t y)
 {
-  if (!longPressed && getTicks && duration10ms == 0) {
+  if (!longPressed && duration10ms == 0) {
     duration10ms = getTicks();
   }
 
