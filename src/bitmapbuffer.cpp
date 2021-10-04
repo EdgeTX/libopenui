@@ -205,6 +205,8 @@ void BitmapBuffer::drawBitmapAbs(coord_t x, coord_t y, const T *bmp,
                     srcx, srcy, srcw, srch);
     }
   } else {
+    setFormat(bmp->getFormat());
+
     int scaledw = srcw * scale;
     int scaledh = srch * scale;
 
@@ -217,7 +219,7 @@ void BitmapBuffer::drawBitmapAbs(coord_t x, coord_t y, const T *bmp,
       for (int j = 0; j < scaledw; j++) {
         const pixel_t *q = qstart;
         MOVE_PIXEL_RIGHT(q, int(j / scale));
-        if (bmp->getFormat() == BMP_ARGB4444) {
+        if (bmp->getFormat() == BMP_RGB565) {
           ARGB_SPLIT(*q, a, r, g, b);
           drawAlphaPixel(p, a, RGB_JOIN(r << 1, g << 2, b << 1));
         } else {
@@ -1599,9 +1601,11 @@ BitmapBuffer * BitmapBuffer::convert_stb_bitmap(uint8_t * img, int w, int h, int
     return nullptr;
   }
 
+/*
 #if 0 // use Stb's "stbi__vertically_flip_on_load" instead of this?
   DMABitmapConvert(bmp->data, img, w, h, n == 4 ? DMA2D_ARGB4444 : DMA2D_RGB565);
 #else
+*/
   pixel_t * dest = bmp->getPixelPtrAbs(0, 0);
   const uint8_t * p = img;
   if (n == 4) {
@@ -1612,6 +1616,7 @@ BitmapBuffer * BitmapBuffer::convert_stb_bitmap(uint8_t * img, int w, int h, int
         p += 4;
       }
     }
+    bmp->format = BMP_ARGB4444;
   }
   else { // assume 3 bytes, packed in groups of 4, I guess
     for (int row = 0; row < h; ++row) {
@@ -1621,8 +1626,9 @@ BitmapBuffer * BitmapBuffer::convert_stb_bitmap(uint8_t * img, int w, int h, int
         p += 4;
       }
     }
+    bmp->format = BMP_RGB565;
   }
-#endif
+//#endif
 
   return bmp;
 }
