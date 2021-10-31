@@ -39,15 +39,77 @@ void MainWindow::emptyTrash()
   trash.clear();
 }
 
+void MainWindow::setTouchEnabled(bool enable)
+{
+  switch(touchEnableState)
+  {
+  case TouchOn:
+    if(!enable)
+      touchEnableState = TouchOff;
+    break;
+  case TouchOn_Touching:
+    if(!enable)
+      touchEnableState = TouchOnToOff_Touching;
+    break;
+  case TouchOnToOff_Touching:
+    if(enable)
+      touchEnableState = TouchOn_Touching;
+    break;
+  case TouchOff:
+    if(enable)
+      touchEnableState = TouchOn;
+    break;
+  case TouchOff_Touching:
+    if(enable)
+      touchEnableState = TouchOffToOn_Touching;
+    break;
+  case TouchOffToOn_Touching:
+    if(!enable)
+      touchEnableState = TouchOff_Touching;
+    break;
+  }
+}
+
 void MainWindow::checkEvents()
 {
 #if defined(HARDWARE_TOUCH)
+
   if (touchPanelEventOccured()) {
-    touchPanelRead();
+    touchState = touchPanelRead();
   }
 
-  if(!touchEnabled)
+  TouchEnableState currentState = touchEnableState;
+
+  switch(touchState.event)
+  {
+  case TE_DOWN:
+  case TE_SLIDE:
+      if(touchEnableState == TouchOn)
+        touchEnableState = TouchOn_Touching;
+      else if (touchEnableState == TouchOff)
+        touchEnableState = TouchOff_Touching;
+      break;
+  case TE_UP:
+  case TE_SLIDE_END:
+    if(touchEnableState == TouchOn_Touching)
+      touchEnableState = TouchOn;
+    else if (touchEnableState == TouchOff_Touching)
+      touchEnableState = TouchOff;
+    else if(touchEnableState == TouchOnToOff_Touching)
+      touchEnableState = TouchOff;
+    else if(touchEnableState == TouchOffToOn_Touching)
+      touchEnableState = TouchOn;
+    break;
+  default:
+      break;
+  }
+
+  if  (  currentState == TouchOff
+      || currentState == TouchOff_Touching
+      || currentState == TouchOffToOn_Touching)
+  {
     touchState.event = TE_NONE;
+  }
 
   if (touchState.event == TE_DOWN) {
     onTouchStart(touchState.x + scrollPositionX, touchState.y + scrollPositionY);
