@@ -78,7 +78,11 @@ void MainWindow::checkEvents()
       touchState.lastDeltaY = 0;
 
     onTouchSlide(touchState.x, touchState.y, touchState.startX, touchState.startY, touchState.lastDeltaX, touchState.lastDeltaY);
+    touchState.event = TE_NONE;
     slidingWindow = nullptr;
+  } else if (touchState.event == TE_SLIDE_END && slidingWindow == nullptr) {
+    onTouchEnd(touchState.startX + scrollPositionX, touchState.startY + scrollPositionY);
+    touchState.event = TE_NONE;
   }
 #endif
 
