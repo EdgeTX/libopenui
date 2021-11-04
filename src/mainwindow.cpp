@@ -76,6 +76,8 @@ void MainWindow::checkEvents()
 
   if (touchPanelEventOccured()) {
     touchState = touchPanelRead();
+  } else {
+      touchState.event = TE_NONE;
   }
 
   TouchEnableState currentState = touchEnableState;
