@@ -50,8 +50,6 @@ void MainWindow::checkEvents()
     touchState.event = TE_NONE;
 
   if (touchState.event == TE_DOWN) {
-
-  if (touchState.event == TE_DOWN) {
     onTouchStart(touchState.x + scrollPositionX, touchState.y + scrollPositionY);
     slidingWindow = nullptr;
   }
