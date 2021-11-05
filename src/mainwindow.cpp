@@ -106,6 +106,9 @@ void MainWindow::checkEvents()
       break;
   }
 
+  if(touchState.event != TE_NONE)
+    _touchEventOccured = true;
+
   if  (  currentState == TouchOff
       || currentState == TouchOff_Touching
       || currentState == TouchOffToOn_Touching)

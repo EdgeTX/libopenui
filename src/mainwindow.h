@@ -66,6 +66,14 @@ class MainWindow: public Window
 
 #if defined(HARDWARE_TOUCH)
     void setTouchEnabled(bool enable);
+    bool touchEventOccured() {
+      if(_touchEventOccured)
+      {
+        _touchEventOccured = false;
+        return true;
+      }
+      return false;
+    }
 #endif
 
     void invalidate()
@@ -91,6 +99,7 @@ class MainWindow: public Window
     const char * shutdown = nullptr;
 #if defined(HARDWARE_TOUCH)
     bool lastTouchState = false;
+    bool _touchEventOccured = false;
 
     enum TouchEnableState {
     	TouchOn,
