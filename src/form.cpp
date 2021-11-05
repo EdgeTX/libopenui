@@ -294,6 +294,17 @@ void FormWindow::onEvent(event_t event)
     if (getFocus() != currentFocus) {
       return;
     }
+  } else if (event == EVT_KEY_BREAK(KEY_PGUP)) {
+    FormField *focus = dynamic_cast<FormField *>(getFocus());
+    if (focus && focus->getPreviousField()) {
+      onKeyPress();
+      focus->getPreviousField()->setFocus(SET_FOCUS_BACKWARD, focus);
+    }
+  } else if (event == EVT_KEY_BREAK(KEY_PGDN)) {
+    FormField * focus = dynamic_cast<FormField *> (getFocus());
+    if (focus != nullptr && focus->getNextField()) {
+      focus->getNextField()->setFocus(SET_FOCUS_FORWARD, focus);
+    }
   }
 
   FormGroup::onEvent(event);
