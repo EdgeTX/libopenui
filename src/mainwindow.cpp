@@ -39,6 +39,7 @@ void MainWindow::emptyTrash()
   trash.clear();
 }
 
+#if defined(HARDWARE_TOUCH)
 void MainWindow::setTouchEnabled(bool enable)
 {
   switch(touchEnableState)
@@ -69,6 +70,7 @@ void MainWindow::setTouchEnabled(bool enable)
     break;
   }
 }
+#endif
 
 void MainWindow::checkEvents()
 {
