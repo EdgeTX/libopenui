@@ -78,16 +78,6 @@ class MenuToolbar: public FormGroup {
             children.begin() :
             ++current;
 
-        // current = ! IS_KEY_LONG(event) ?
-        //   current == children.end() ?
-        //     children.begin() :
-        //     ++current:
-        //   current == children.end() ?
-        //     --current:
-        //     current == children.begin() ? 
-        //       children.end() :
-        //       --current;
-
         if (IS_KEY_LONG(event))
           killEvents(event);
 
