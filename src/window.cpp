@@ -448,6 +448,8 @@ bool Window::onTouchEnd(coord_t x, coord_t y)
 
 bool Window::onTouchSlide(coord_t x, coord_t y, coord_t startX, coord_t startY, coord_t slideX, coord_t slideY)
 {
+  x += getScrollPositionX();
+  y += getScrollPositionY();
   startX += getScrollPositionX();
   startY += getScrollPositionY();
 
