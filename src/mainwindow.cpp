@@ -84,7 +84,7 @@ void MainWindow::checkEvents()
   if (touchPanelEventOccured()) {
     short lastDeltaX = touchState.lastDeltaX;
     short lastDeltaY = touchState.lastDeltaY;;
-    touchState = touchPanelRead();
+    touchState = getLastTochState();  // this is a hack until we fully figure out touch
     touchState.lastDeltaX = lastDeltaX;
     touchState.lastDeltaY = lastDeltaY;
   }
@@ -222,7 +222,10 @@ void MainWindow::run(bool trash)
 {
   auto start = ticksNow();
 
-  checkEvents();
+  // KLK: removed for now.  This is now
+  // called from lvgl event processing when
+  // necessary
+  // checkEvents();
 
   if (trash) {
     emptyTrash();
