@@ -553,7 +553,7 @@ void BitmapBuffer::drawFilledRect(coord_t x, coord_t y, coord_t w, coord_t h, ui
     pixel_t color_argb = ARGB((OPACITY_MAX - opacity) << 4, r << 3, g << 2, b << 3);
 
     // Fill the buffer
-    scratch.drawSolidFilledRect(0, 0, w, h, color_argb << 16);
+    scratch.drawSolidFilledRect(0, 0, w, h, (color_argb == 0xffff) ? color_argb : color_argb << 16);
 
     // And blend
     drawBitmapAbs(x, y, &scratch, 0, 0, w, h);
