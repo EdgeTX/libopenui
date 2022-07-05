@@ -122,9 +122,10 @@ void MenuBody::onPress(size_t index)
     if (menu->multiple) {
       if (selectedIndex == (int)index)
         lines[index].onPress();
-      else
+      else {
         setIndex(index);
         lines[index].onPress();
+      }
     } else {
       // delete menu first to avoid
       // focus issues with onPress()
