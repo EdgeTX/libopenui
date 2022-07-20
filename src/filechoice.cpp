@@ -67,13 +67,13 @@ bool FileChoice::openMenu()
   if (res == OPENUI_FS_OK) {
     for (;;) {
       res = openUiReadDir(&dir, &fno);
-      if (res != OPENUI_FS_OK || openUiFsGetName(&fno).length() == 0)
+      if (res != OPENUI_FS_OK || strlen(openUiFsGetName(&fno)) == 0)
         break;                             // break on error or end of dir
       if (openUiFsIsDir(&fno))        continue;  // skip subfolders
       if (openUiFsIsHiddenFile(&fno)) continue;  // skip hidden files
       if (openUiFsIsSystemFile(&fno)) continue;  // skip system files
 
-      fnExt = openUiGetFileExtension(openUiFsGetName(&fno).c_str(), 0, 0, &fnLen, &extLen);
+      fnExt = openUiGetFileExtension(openUiFsGetName(&fno), 0, 0, &fnLen, &extLen);
 
       if (extension && (!fnExt || !openUiIsFileExtensionMatching(fnExt, extension, nullptr)))
         continue;  // wrong extension
