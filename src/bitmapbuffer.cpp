@@ -889,11 +889,38 @@ void BitmapBuffer::drawAnnulusSector(coord_t x, coord_t y, coord_t internalRadiu
     endAngle += 1;
   }
 
+  pixel_t color = COLOR_VAL(flags);
+  APPLY_OFFSET();
+
+  if(draw_ctx)
+  {
+    startAngle -= 90;
+    endAngle -= 90;
+    if(startAngle < 0)
+      startAngle += 360;
+    if(endAngle < 0)
+      endAngle += 360;
+    if(startAngle%360 == endAngle%360)
+        endAngle = startAngle+360;
+    x += draw_ctx->buf_area->x1;
+    y += draw_ctx->buf_area->y1;
+    lv_draw_arc_dsc_t dsc;
+    lv_draw_arc_dsc_init(&dsc);
+    dsc.color = *(lv_color_t*)(void*)(&color);
+    dsc.width = externalRadius - internalRadius;
+    dsc.start_angle = startAngle;
+    dsc.end_angle = endAngle;
+    dsc.opa = LV_OPA_MAX;
+    dsc.blend_mode = LV_BLEND_MODE_NORMAL;
+    dsc.rounded = 0;
+    lv_point_t p = {(int16_t)x,(int16_t)y};
+    lv_draw_arc(draw_ctx, &dsc, &p, externalRadius, startAngle, endAngle);
+    return;
+  }
+
   Slope startSlope(startAngle);
   Slope endSlope(endAngle);
 
-  pixel_t color = COLOR_VAL(flags);
-  APPLY_OFFSET();
 
   coord_t internalDist = internalRadius * internalRadius;
   coord_t externalDist = externalRadius * externalRadius;
