@@ -83,7 +83,7 @@ bool FileChoice::openMenu()
       if (!fnLen || fnLen > maxlen) continue;  // wrong size
 
       // eject duplicates
-      std::string newFile = fno.getName();
+      const char* newFile = fno.getName();
       if (std::find(files.begin(), files.end(), newFile) != files.end())
         continue;
 
