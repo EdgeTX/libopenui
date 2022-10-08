@@ -54,6 +54,7 @@ class TableField : public Window
 
   static void event_cb(lv_event_t *e);
   static void clicked(lv_event_t *e);
+  static void pressing(lv_event_t* e);
   static void draw_begin(lv_event_t *e);
   static void draw_end(lv_event_t *e);
 };

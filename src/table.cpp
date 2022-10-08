@@ -25,13 +25,13 @@ void TableField::event_cb(lv_event_t *e)
   lv_event_code_t code = lv_event_get_code(e);
   if (code == LV_EVENT_VALUE_CHANGED) {
     clicked(e);
+  } else if (code == LV_EVENT_PRESSING) {
+    pressing(e);
   } else if (code == LV_EVENT_DRAW_PART_BEGIN) {
     draw_begin(e);
   } else if (code == LV_EVENT_DRAW_PART_END) {
     draw_end(e);
-  }
-  else if (code == LV_EVENT_DRAW_POST) {
-    
+  } else if (code == LV_EVENT_DRAW_POST) {
     lv_obj_t * obj = lv_event_get_target(e);
     bool has_focus = lv_obj_has_state(obj, LV_STATE_FOCUS_KEY);
     bool is_edited = lv_group_get_editing((lv_group_t*)lv_obj_get_group(obj));
@@ -56,6 +56,24 @@ void TableField::event_cb(lv_event_t *e)
       lv_draw_rect(draw_ctx, &rect_dsc, &coords);
     }
   }
+}
+
+void TableField::pressing(lv_event_t* e)
+{
+#if defined(HARDWARE_TOUCH)
+  lv_obj_t* target = lv_event_get_target(e);
+  if (!target) return;
+
+  TableField* tf = (TableField*)lv_obj_get_user_data(target);
+  if (!tf) return;
+
+  uint16_t row;
+  uint16_t col;
+  lv_table_get_selected_cell(target, &row, &col);
+  if (row == LV_TABLE_CELL_NONE || col == LV_TABLE_CELL_NONE) return;
+
+  tf->onSelected(row, col);
+#endif
 }
 
 void TableField::clicked(lv_event_t *e)
