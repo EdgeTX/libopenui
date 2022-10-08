@@ -81,7 +81,9 @@ void TableField::clicked(lv_event_t *e)
     // Otherwise it's a click
     if (lv_group_get_editing((lv_group_t*)lv_obj_get_group(target))
         || indev_type == LV_INDEV_TYPE_POINTER) {
-    
+#if defined(HARDWARE_TOUCH)
+      tf->onSelected(row, col);
+#endif
       tf->onPress(row, col);
     } else {
       tf->onClicked();
