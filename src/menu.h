@@ -104,7 +104,7 @@ class MenuBody: public TableField
                  std::function<bool()> isChecked);
 
     void removeLines();
-    
+
     void setCancelHandler(std::function<void()> handler)
     {
       _onCancel = std::move(handler);

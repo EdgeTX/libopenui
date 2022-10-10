@@ -328,7 +328,9 @@ void Menu::addLine(const std::string &text, std::function<void()> onPress,
                    bool updatePos)
 {
   content->body.addLine(text, std::move(onPress), std::move(isChecked));
-  if(updatePos) updatePosition();
+  if(updatePos) {
+    updatePosition();
+  }
 }
 
 void Menu::addLine(const uint8_t *icon_mask, const std::string &text,
@@ -337,7 +339,9 @@ void Menu::addLine(const uint8_t *icon_mask, const std::string &text,
                    bool updatePos)
 {
   content->body.addLine(icon_mask, text, std::move(onPress), std::move(isChecked));
-  if(updatePos) updatePosition();
+  if(updatePos) {
+    updatePosition();
+  }
 }
 
 void Menu::removeLines()
