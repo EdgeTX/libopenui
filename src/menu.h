@@ -190,7 +190,7 @@ class Menu: public ModalWindow
                                std::function<void()>&, std::function<bool()>&, bool&)> lineDataHandler;
     void addLines(int vmin, int vmax, lineDataHandler lineFn, std::function<bool(int)> isValid = nullptr, int step = 1);
 
-    typedef std::function<void(int, uint8_t*, std::string&,
+    typedef std::function<void(int, uint8_t*&, std::string&,
                                     std::function<void()>&, std::function<bool()>&, bool&)> ilineDataHandler;
     void addLines(int vmin, int vmax, ilineDataHandler lineFn, std::function<bool(int)> isValid = nullptr, int step = 1);
 
