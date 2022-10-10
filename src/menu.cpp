@@ -97,6 +97,11 @@ MenuBody::MenuBody(Window * parent, const rect_t & rect):
   }
 }
 
+void MenuBody::setLineCount(uint16_t rows)
+{
+  setRowCount(rows);
+}
+
 void MenuBody::addLine(const std::string &text, std::function<void()> onPress,
                        std::function<bool()> isChecked)
 {
@@ -312,19 +317,27 @@ void Menu::setTitle(std::string text)
   updatePosition();
 }
 
+void Menu::setLineCount(uint16_t rows)
+{
+  content->body.setLineCount(rows);
+  updatePosition();
+}
+
 void Menu::addLine(const std::string &text, std::function<void()> onPress,
-                   std::function<bool()> isChecked)
+                   std::function<bool()> isChecked, 
+                   bool updatePos)
 {
   content->body.addLine(text, std::move(onPress), std::move(isChecked));
-  updatePosition();
+  if(updatePos) updatePosition();
 }
 
 void Menu::addLine(const uint8_t *icon_mask, const std::string &text,
                    std::function<void()> onPress,
-                   std::function<bool()> isChecked)
+                   std::function<bool()> isChecked, 
+                   bool updatePos)
 {
   content->body.addLine(icon_mask, text, std::move(onPress), std::move(isChecked));
-  updatePosition();
+  if(updatePos) updatePosition();
 }
 
 void Menu::removeLines()

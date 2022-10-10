@@ -97,6 +97,7 @@ bool FileChoice::openMenu()
       files.push_front("");
 
       auto menu = new Menu(this);
+      menu->setLineCount(files.size());
       int count = 0;
       int current = -1;
       std::string value = getValue();
@@ -104,7 +105,7 @@ bool FileChoice::openMenu()
         menu->addLine(file, [=]() {
             setValue(file);
             lv_event_send(lvobj, LV_EVENT_VALUE_CHANGED, nullptr);
-        });
+        }, nullptr, false);
         // TRACE("%s %d %s %d", value.c_str(), value.size(), file.c_str(),
         // file.size());
         if (value.compare(file) == 0) {
@@ -113,6 +114,7 @@ bool FileChoice::openMenu()
         }
         ++count;
       }
+      menu->updatePosition();
 
       if (current >= 0) {
         menu->select(current);

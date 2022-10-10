@@ -95,6 +95,7 @@ class MenuBody: public TableField
     void onEvent(event_t event) override;
     void onCancel() override;
 
+    void setLineCount(uint16_t rows);
     void addLine(const std::string &text, std::function<void()> onPress,
                  std::function<bool()> isChecked);
 
@@ -103,7 +104,7 @@ class MenuBody: public TableField
                  std::function<bool()> isChecked);
 
     void removeLines();
-
+    
     void setCancelHandler(std::function<void()> handler)
     {
       _onCancel = std::move(handler);
@@ -178,12 +179,14 @@ class Menu: public ModalWindow
 
     void setTitle(std::string text);
 
+    void setLineCount(uint16_t rows);
+
     void addLine(const std::string &text, std::function<void()> onPress,
-                 std::function<bool()> isChecked = nullptr);
+                 std::function<bool()> isChecked = nullptr, bool updatePos = true);
 
     void addLine(const uint8_t *icon_mask, const std::string &text,
                  std::function<void()> onPress,
-                 std::function<bool()> isChecked = nullptr);
+                 std::function<bool()> isChecked = nullptr, bool updatePos = true);
 
     void addSeparator();
 
@@ -215,12 +218,13 @@ class Menu: public ModalWindow
       }
     }
 
+    void updatePosition();
+    
   protected:
     MenuWindowContent* content;
     bool multiple;
     Window * toolbar = nullptr;
     std::function<void()> waitHandler;
-    void updatePosition();
 
     void setOutline(Window* obj);
 };
