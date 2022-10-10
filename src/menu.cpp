@@ -97,9 +97,9 @@ MenuBody::MenuBody(Window * parent, const rect_t & rect):
   }
 }
 
-void MenuBody::setLineCount(uint16_t rows)
+void MenuBody::addLineCount(uint16_t rows)
 {
-  setRowCount(rows);
+  setRowCount(lines.size() + rows);
 }
 
 void MenuBody::addLine(const std::string &text, std::function<void()> onPress,
@@ -317,32 +317,90 @@ void Menu::setTitle(std::string text)
   updatePosition();
 }
 
-void Menu::setLineCount(uint16_t rows)
-{
-  content->body.setLineCount(rows);
-  updatePosition();
-}
-
 void Menu::addLine(const std::string &text, std::function<void()> onPress,
-                   std::function<bool()> isChecked, 
-                   bool updatePos)
+                   std::function<bool()> isChecked)
 {
   content->body.addLine(text, std::move(onPress), std::move(isChecked));
-  if(updatePos) {
-    updatePosition();
-  }
+  updatePosition();
 }
 
 void Menu::addLine(const uint8_t *icon_mask, const std::string &text,
                    std::function<void()> onPress,
-                   std::function<bool()> isChecked, 
-                   bool updatePos)
+                   std::function<bool()> isChecked)
 {
   content->body.addLine(icon_mask, text, std::move(onPress), std::move(isChecked));
-  if(updatePos) {
-    updatePosition();
+  updatePosition();
+}
+
+void Menu::addLines(int vmin, int vmax, lineDataHandler lineFn, std::function<bool(int)> isValid, int step)
+{
+  // count lines
+  int count = 0;
+  for (int i = vmin; i <= vmax; i += step) {
+    if(!isValid || isValid(i)) {
+      count++;
+    }
+  }
+  // preset line count
+  content->body.addLineCount(count);
+
+  // set the lines
+  int selectedIx = -1;
+  for (int i = vmin; i <= vmax; i += step) {
+    if(isValid && !isValid(i)) continue;
+
+    std::string text;
+    std::function<void()> onPress = nullptr;
+    std::function<bool()> isChecked = nullptr;
+    bool selected = false;
+    lineFn(i, text, onPress, isChecked, selected);
+    content->body.addLine(text, std::move(onPress), std::move(isChecked));
+    if(selected) {
+      selectedIx = i;
+    }
+  }
+  updatePosition();
+
+  if(selectedIx >= 0) {
+    select(selectedIx);
   }
 }
+
+void Menu::addLines(int vmin, int vmax, ilineDataHandler lineFn, std::function<bool(int)> isValid, int step)
+{
+  // count lines
+  int count = 0;
+  for (int i = vmin; i <= vmax; i += step) {
+    if(!isValid || isValid(i)) {
+      count++;
+    }
+  }
+  // preset line count
+  content->body.addLineCount(count);
+
+  // set the lines
+  int selectedIx = -1;
+  for (int i = vmin; i <= vmax; i += step) {
+    if(isValid && !isValid(i)) continue;
+
+    uint8_t* icon_mask = nullptr;
+    std::string text;
+    std::function<void()> onPress = nullptr;
+    std::function<bool()> isChecked = nullptr;
+    bool selected = false;
+    lineFn(i, icon_mask, text, onPress, isChecked, selected);
+    content->body.addLine(icon_mask, text, std::move(onPress), std::move(isChecked));
+    if(selected) {
+      selectedIx = i;
+    }
+  }
+  updatePosition();
+
+  if(selectedIx >= 0) {
+    select(selectedIx);
+  }
+}
+
 
 void Menu::removeLines()
 {

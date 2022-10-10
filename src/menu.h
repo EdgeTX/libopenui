@@ -95,7 +95,7 @@ class MenuBody: public TableField
     void onEvent(event_t event) override;
     void onCancel() override;
 
-    void setLineCount(uint16_t rows);
+    void addLineCount(uint16_t rows);
     void addLine(const std::string &text, std::function<void()> onPress,
                  std::function<bool()> isChecked);
 
@@ -179,14 +179,20 @@ class Menu: public ModalWindow
 
     void setTitle(std::string text);
 
-    void setLineCount(uint16_t rows);
-
     void addLine(const std::string &text, std::function<void()> onPress,
-                 std::function<bool()> isChecked = nullptr, bool updatePos = true);
+                 std::function<bool()> isChecked = nullptr);
 
     void addLine(const uint8_t *icon_mask, const std::string &text,
                  std::function<void()> onPress,
-                 std::function<bool()> isChecked = nullptr, bool updatePos = true);
+                 std::function<bool()> isChecked = nullptr);
+
+    typedef std::function<void(int, std::string&,
+                               std::function<void()>&, std::function<bool()>&, bool&)> lineDataHandler;
+    void addLines(int vmin, int vmax, lineDataHandler lineFn, std::function<bool(int)> isValid = nullptr, int step = 1);
+
+    typedef std::function<void(int, uint8_t*, std::string&,
+                                    std::function<void()>&, std::function<bool()>&, bool&)> ilineDataHandler;
+    void addLines(int vmin, int vmax, ilineDataHandler lineFn, std::function<bool(int)> isValid = nullptr, int step = 1);
 
     void addSeparator();
 
@@ -217,14 +223,13 @@ class Menu: public ModalWindow
         waitHandler();
       }
     }
-
-    void updatePosition();
     
   protected:
     MenuWindowContent* content;
     bool multiple;
     Window * toolbar = nullptr;
     std::function<void()> waitHandler;
+    void updatePosition();
 
     void setOutline(Window* obj);
 };
