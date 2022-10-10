@@ -223,7 +223,7 @@ class Menu: public ModalWindow
         waitHandler();
       }
     }
-    
+
   protected:
     MenuWindowContent* content;
     bool multiple;
