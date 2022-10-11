@@ -209,20 +209,23 @@ void Choice::fillMenu(Menu *menu, const FilterFct& filter)
   menu->removeLines();
   auto value = _getValue();
   
-  int count = 0;
-  for (int i = vmin; i <= vmax; ++i) {
-    if (filter && !filter(i)) continue;
-    if (isValueAvailable && !isValueAvailable(i)) continue;
-    if (textHandler) {
-      menu->addLine(textHandler(i), [=]() { setValue(i); });
-    } else if (unsigned(i - vmin) < values.size()) {
-      menu->addLine(values[i - vmin], [=]() { setValue(i); });
-    } else {
-      menu->addLine(std::to_string(i), [=]() { setValue(i); });
-    }
-    if (value == i) { menu->select(count); }
-    ++count;
-  }
+  menu->addLines(vmin, vmax, [=](int i) {
+      Menu::MenuLineDesc desc;
+      if (textHandler) {
+        desc.text = textHandler(i);
+      } else if (unsigned(i - vmin) < values.size()) {
+        desc.text = values[i - vmin];
+      } else {
+        desc.text = std::to_string(i);
+      }
+      desc.onPress = [=]() { setValue(i); };
+      desc.selected = (value == i);
+      return desc;
+    },
+    [=](int i) {
+      return !((filter && !filter(i))
+               || (isValueAvailable && !isValueAvailable(i)));
+    });
 }
 
 void Choice::openMenu()

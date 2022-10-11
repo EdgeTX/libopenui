@@ -347,6 +347,7 @@ void Menu::addLines(int vmin, int vmax, std::function<MenuLineDesc(int)> lineFn,
 
   // set the lines
   int selectedIx = -1;
+  count = 0;
   for (int i = vmin; i <= vmax; i += step) {
     if(isValid && !isValid(i)) continue;
 
@@ -357,8 +358,9 @@ void Menu::addLines(int vmin, int vmax, std::function<MenuLineDesc(int)> lineFn,
       content->body.addLine(desc.text, std::move(desc.onPress), std::move(desc.isChecked));
     }
     if(desc.selected) {
-      selectedIx = i;
+      selectedIx = count;
     }
+    count++;
   }
   updatePosition();
 
