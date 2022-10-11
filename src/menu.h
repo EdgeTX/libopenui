@@ -156,6 +156,26 @@ class Menu: public ModalWindow
   friend class MenuBody;
 
   public:
+    class MenuLineDesc
+    {
+    public:
+      MenuLineDesc()
+      {
+        icon_mask = nullptr;
+        onPress = nullptr;
+        isChecked = nullptr;
+        selected = false;
+      }
+
+    public:
+      uint8_t *icon_mask;
+      std::string text;
+      std::function<void()> onPress;
+      std::function<bool()> isChecked;
+      bool selected;
+    };
+
+  public:
     explicit Menu(Window * parent, bool multiple = false);
 
 #if defined(DEBUG_WINDOWS)
@@ -186,13 +206,8 @@ class Menu: public ModalWindow
                  std::function<void()> onPress,
                  std::function<bool()> isChecked = nullptr);
 
-    typedef std::function<void(int, std::string&,
-                               std::function<void()>&, std::function<bool()>&, bool&)> lineDataHandler;
-    void addLines(int vmin, int vmax, lineDataHandler lineFn, std::function<bool(int)> isValid = nullptr, int step = 1);
-
-    typedef std::function<void(int, uint8_t*&, std::string&,
-                                    std::function<void()>&, std::function<bool()>&, bool&)> ilineDataHandler;
-    void addLines(int vmin, int vmax, ilineDataHandler lineFn, std::function<bool(int)> isValid = nullptr, int step = 1);
+    void addLines(int vmin, int vmax, std::function<MenuLineDesc(int)> lineFn,
+                  std::function<bool(int)> isValid = nullptr, int step = 1);
 
     void addSeparator();
 

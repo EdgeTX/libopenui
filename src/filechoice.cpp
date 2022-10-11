@@ -98,18 +98,17 @@ bool FileChoice::openMenu()
 
       auto menu = new Menu(this);
       std::string value = getValue();
-      std::vector<std::string> filesv;
-      std::copy(files.begin(), files.end(), std::back_inserter(filesv));
-      menu->addLines(0, filesv.size() - 1, [=](int i, std::string& text,
-                     std::function<void()>& onPress, std::function<bool()>& isChecked,
-                     bool& selected) {
+      std::vector<std::string> filesv(files.begin(), files.end());
+      menu->addLines(0, filesv.size() - 1, [=](int i) {
         std::string file = filesv[i];
-        text = file;
-        onPress = [=]() {
+        Menu::MenuLineDesc desc;
+        desc.text = file;
+        desc.onPress = [=]() {
           setValue(file);
           lv_event_send(lvobj, LV_EVENT_VALUE_CHANGED, nullptr);
         };
-        selected = (value.compare(file) == 0);
+        desc.selected = (value.compare(file) == 0);
+        return desc;
       });
 
       menu->setCloseHandler([=]() {

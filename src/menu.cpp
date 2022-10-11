@@ -332,7 +332,8 @@ void Menu::addLine(const uint8_t *icon_mask, const std::string &text,
   updatePosition();
 }
 
-void Menu::addLines(int vmin, int vmax, lineDataHandler lineFn, std::function<bool(int)> isValid, int step)
+void Menu::addLines(int vmin, int vmax, std::function<MenuLineDesc(int)> lineFn,
+                    std::function<bool(int)> isValid, int step)
 {
   // count lines
   int count = 0;
@@ -349,13 +350,13 @@ void Menu::addLines(int vmin, int vmax, lineDataHandler lineFn, std::function<bo
   for (int i = vmin; i <= vmax; i += step) {
     if(isValid && !isValid(i)) continue;
 
-    std::string text;
-    std::function<void()> onPress = nullptr;
-    std::function<bool()> isChecked = nullptr;
-    bool selected = false;
-    lineFn(i, text, onPress, isChecked, selected);
-    content->body.addLine(text, std::move(onPress), std::move(isChecked));
-    if(selected) {
+    MenuLineDesc desc = lineFn(i);
+    if(desc.icon_mask) {
+      content->body.addLine(desc.icon_mask, desc.text, std::move(desc.onPress), std::move(desc.isChecked));
+    } else {
+      content->body.addLine(desc.text, std::move(desc.onPress), std::move(desc.isChecked));
+    }
+    if(desc.selected) {
       selectedIx = i;
     }
   }
@@ -365,42 +366,6 @@ void Menu::addLines(int vmin, int vmax, lineDataHandler lineFn, std::function<bo
     select(selectedIx);
   }
 }
-
-void Menu::addLines(int vmin, int vmax, ilineDataHandler lineFn, std::function<bool(int)> isValid, int step)
-{
-  // count lines
-  int count = 0;
-  for (int i = vmin; i <= vmax; i += step) {
-    if(!isValid || isValid(i)) {
-      count++;
-    }
-  }
-  // preset line count
-  content->body.addLineCount(count);
-
-  // set the lines
-  int selectedIx = -1;
-  for (int i = vmin; i <= vmax; i += step) {
-    if(isValid && !isValid(i)) continue;
-
-    uint8_t* icon_mask = nullptr;
-    std::string text;
-    std::function<void()> onPress = nullptr;
-    std::function<bool()> isChecked = nullptr;
-    bool selected = false;
-    lineFn(i, icon_mask, text, onPress, isChecked, selected);
-    content->body.addLine(icon_mask, text, std::move(onPress), std::move(isChecked));
-    if(selected) {
-      selectedIx = i;
-    }
-  }
-  updatePosition();
-
-  if(selectedIx >= 0) {
-    select(selectedIx);
-  }
-}
-
 
 void Menu::removeLines()
 {
