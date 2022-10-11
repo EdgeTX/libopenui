@@ -97,19 +97,27 @@ bool FileChoice::openMenu()
       files.push_front("");
 
       auto menu = new Menu(this);
+      int count = 0;
+      int current = -1;
       std::string value = getValue();
-      std::vector<std::string> filesv(files.begin(), files.end());
-      menu->addLines(0, filesv.size() - 1, [=](int i) {
-        std::string file = filesv[i];
-        Menu::MenuLineDesc desc;
-        desc.text = file;
-        desc.onPress = [=]() {
-          setValue(file);
-          lv_event_send(lvobj, LV_EVENT_VALUE_CHANGED, nullptr);
-        };
-        desc.selected = (value.compare(file) == 0);
-        return desc;
-      });
+      for (const auto &file : files) {
+        menu->addLineBuffered(file, [=]() {
+            setValue(file);
+            lv_event_send(lvobj, LV_EVENT_VALUE_CHANGED, nullptr);
+        });
+        // TRACE("%s %d %s %d", value.c_str(), value.size(), file.c_str(),
+        // file.size());
+        if (value.compare(file) == 0) {
+          // TRACE("OK");
+          current = count;
+        }
+        ++count;
+      }
+      menu->updateLines();
+
+      if (current >= 0) {
+        menu->select(current);
+      }
 
       menu->setCloseHandler([=]() {
         editMode = false;

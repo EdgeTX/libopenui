@@ -53,9 +53,9 @@ class MenuBody: public TableField
     friend class MenuBody;
 
    public:
-    MenuLine(std::function<void()> onPress, std::function<bool()> isChecked,
+    MenuLine(const std::string& text, std::function<void()> onPress, std::function<bool()> isChecked,
              lv_obj_t *icon) :
-        onPress(std::move(onPress)), isChecked(std::move(isChecked)), icon(icon)
+        text(text), onPress(std::move(onPress)), isChecked(std::move(isChecked)), icon(icon)
     {
     }
 
@@ -65,6 +65,7 @@ class MenuBody: public TableField
     lv_obj_t* getIcon() { return icon.get(); }
     
    protected:
+    std::string text;
     std::function<void()> onPress;
     std::function<bool()> isChecked;
     std::unique_ptr<lv_obj_t, lvobj_delete> icon;
@@ -95,13 +96,15 @@ class MenuBody: public TableField
     void onEvent(event_t event) override;
     void onCancel() override;
 
-    void addLineCount(uint16_t rows);
     void addLine(const std::string &text, std::function<void()> onPress,
-                 std::function<bool()> isChecked);
+                 std::function<bool()> isChecked, bool update = true);
 
     void addLine(const uint8_t *icon_mask, const std::string &text,
                  std::function<void()> onPress,
-                 std::function<bool()> isChecked);
+                 std::function<bool()> isChecked,
+                 bool update = true);
+
+    void updateLines();
 
     void removeLines();
 
@@ -156,26 +159,6 @@ class Menu: public ModalWindow
   friend class MenuBody;
 
   public:
-    class MenuLineDesc
-    {
-    public:
-      MenuLineDesc()
-      {
-        icon_mask = nullptr;
-        onPress = nullptr;
-        isChecked = nullptr;
-        selected = false;
-      }
-
-    public:
-      uint8_t *icon_mask;
-      std::string text;
-      std::function<void()> onPress;
-      std::function<bool()> isChecked;
-      bool selected;
-    };
-
-  public:
     explicit Menu(Window * parent, bool multiple = false);
 
 #if defined(DEBUG_WINDOWS)
@@ -206,8 +189,14 @@ class Menu: public ModalWindow
                  std::function<void()> onPress,
                  std::function<bool()> isChecked = nullptr);
 
-    void addLines(int vmin, int vmax, std::function<MenuLineDesc(int)> lineFn,
-                  std::function<bool(int)> isValid = nullptr, int step = 1);
+    void addLineBuffered(const std::string &text, std::function<void()> onPress,
+                 std::function<bool()> isChecked = nullptr);
+
+    void addLineBuffered(const uint8_t *icon_mask, const std::string &text,
+                 std::function<void()> onPress,
+                 std::function<bool()> isChecked = nullptr);
+
+    void updateLines();
 
     void addSeparator();
 

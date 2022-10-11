@@ -209,23 +209,23 @@ void Choice::fillMenu(Menu *menu, const FilterFct& filter)
   menu->removeLines();
   auto value = _getValue();
   
-  menu->addLines(vmin, vmax, [=](int i) {
-      Menu::MenuLineDesc desc;
-      if (textHandler) {
-        desc.text = textHandler(i);
-      } else if (unsigned(i - vmin) < values.size()) {
-        desc.text = values[i - vmin];
-      } else {
-        desc.text = std::to_string(i);
-      }
-      desc.onPress = [=]() { setValue(i); };
-      desc.selected = (value == i);
-      return desc;
-    },
-    [=](int i) {
-      return !((filter && !filter(i))
-               || (isValueAvailable && !isValueAvailable(i)));
-    });
+  int count = 0;
+  int selectedIx = -1;
+  for (int i = vmin; i <= vmax; ++i) {
+    if (filter && !filter(i)) continue;
+    if (isValueAvailable && !isValueAvailable(i)) continue;
+    if (textHandler) {
+      menu->addLineBuffered(textHandler(i), [=]() { setValue(i); });
+    } else if (unsigned(i - vmin) < values.size()) {
+      menu->addLineBuffered(values[i - vmin], [=]() { setValue(i); });
+    } else {
+      menu->addLineBuffered(std::to_string(i), [=]() { setValue(i); });
+    }
+    if (value == i) { selectedIx = count; }
+    ++count;
+  }
+  menu->updateLines();
+  if (selectedIx >= 0) { menu->select(selectedIx); }
 }
 
 void Choice::openMenu()
