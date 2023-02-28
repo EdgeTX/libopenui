@@ -4,4 +4,4 @@
 [submodule "thirdparty/lvgl"]
 	path = thirdparty/lvgl
 	url = https://github.com/EdgeTX/lvgl.git
-	branch = release/v8.2
+	branch = v8.3-patched
